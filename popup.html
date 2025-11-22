@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 450px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .flow-status {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .flow-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .flow-state {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      text-transform: capitalize;
+    }
+
+    .flow-score {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .focus-message {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .focus-message.low {
+      background: rgba(239, 68, 68, 0.3);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .focus-message.medium {
+      background: rgba(251, 191, 36, 0.3);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+    }
+
+    .focus-message.high {
+      background: rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .chart-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 150px !important;
+    }
+
+    .controls {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .control-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .control-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .toggle {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .toggle.active {
+      background: #4ade80;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle.active .toggle-slider {
+      transform: translateX(24px);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .blocked-sites {
+      margin-top: 15px;
+    }
+
+    .site-list {
+      max-height: 120px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+
+    .site-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+
+    .remove-btn {
+      background: rgba(239, 68, 68, 0.8);
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      width: auto;
+    }
+
+    .add-site {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .add-site input {
+      flex: 1;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      color: white;
+      font-size: 12px;
+    }
+
+    .add-site input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .add-site button {
+      padding: 8px 16px;
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    .analytics-section {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .analytics-stats {
+      margin-bottom: 15px;
+    }
+
+    .analytics-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .analytics-row:last-child {
+      border-bottom: none;
+    }
+
+    .analytics-label {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .analytics-value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .export-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .export-btn {
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      margin-bottom: 0;
+    }
+
+    .export-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .analytics-info {
+      text-align: center;
+      opacity: 0.7;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧠 Flow Monitor</h1>
+      <p class="subtitle">AI-Powered Focus Tracker</p>
+    </header>
+
+    <div class="flow-status">
+      <div class="flow-icon" id="flowIcon">🎯</div>
+      <div class="flow-state" id="flowState">Loading...</div>
+      <div class="flow-score" id="flowScore">Analyzing your flow state...</div>
+      <div class="focus-message" id="focusMessage">Starting session...</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Tab Switches</div>
+        <div class="stat-value" id="tabSwitches">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Keystrokes</div>
+        <div class="stat-value" id="keystrokes">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Session Time</div>
+        <div class="stat-value" id="sessionTime">0m</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Focus Score</div>
+        <div class="stat-value" id="focusScore">0%</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">Flow State Timeline (Last Hour)</div>
+      <canvas id="flowChart"></canvas>
+    </div>
+
+    <div class="analytics-section">
+      <div class="section-title">📊 Analytics Dashboard</div>
+      <div class="analytics-stats">
+        <div class="analytics-row">
+          <span class="analytics-label">Total Events</span>
+          <span class="analytics-value" id="totalEvents">0</span>
+        </div>
+        <div class="analytics-row">
+          <span class="analytics-label">Session Duration</span>
+          <span class="analytics-value" id="sessionDuration">0m</span>
+        </div>
+        <div class="analytics-row">
+          <span class="analytics-label">Events/Min</span>
+          <span class="analytics-value" id="eventsPerMin">0</span>
+        </div>
+      </div>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportJSON">Export JSON</button>
+        <button class="export-btn" id="exportCSV">Export CSV</button>
+      </div>
+      <div class="analytics-info">Download reports for detailed analysis</div>
+    </div>
+
+    <div class="controls">
+      <div class="control-item">
+        <span class="control-label">Block Distracting Sites</span>
+        <div class="toggle active" id="blockingToggle">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+      
+      <div class="blocked-sites">
+        <div class="control-label" style="margin-bottom: 10px;">Blocked Sites</div>
+        <div class="site-list" id="siteList"></div>
+        <div class="add-site">
+          <input type="text" id="newSite" placeholder="example.com">
+          <button id="addSite">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-grid">
+      <button id="resetStats">Reset Stats</button>
+      <button id="viewDashboard">View Dashboard</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

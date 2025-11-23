@@ -1,3 +1,5 @@
+# Implemented in NITSHACKS software track hackathon, in NIT Silcher
+
 # 🧠 Flow Monitor v2.0 - Chrome Extension
 
 AI-powered flow state detection and distraction blocker with comprehensive analytics dashboard.
